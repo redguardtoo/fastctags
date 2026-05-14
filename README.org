@@ -1,0 +1,71 @@
+* Navigate&complete code with Universal Ctags
+[[https://github.com/redguardtoo/fastctags/actions/workflows/test.yml][https://github.com/redguardtoo/fastctags/actions/workflows/test.yml/badge.svg]]
+# [[http://melpa.org/#/fastctags][file:http://melpa.org/packages/fastctags-badge.svg]]
+# [[http://stable.melpa.org/#/fastctags][file:http://stable.melpa.org/packages/fastctags-badge.svg]]
+
+still WIP ...
+
+Navigate&complete code with [[https://github.com/universal-ctags/ctags][Universal Ctags]] in Emacs.
+
+Test with huge projects like Linux kernel without performance issue.
+
+Only native Emacs API is used. So you can combine it with any UI package (company, corfu, counsel, consult ....)
+
+Code navigation screenshot,
+[[code-navigation.png]]
+
+Code completion screenshot,
+[[code-completion.png]]
+
+* Install and Setup
+You could place =fastctags.el= under [[https://www.emacswiki.org/emacs/LoadPath][Load Path]], then add =(require 'fastctags)= to your configuration.
+
+# I recommend to use [[http://melpa.org/]] to install the package. (melpa is not ready yet)
+
+Setup is simple, insert below code into "~/.emacs.d/init.el",
+#+BEGIN_SRC emacs-lisp
+(fastctags-auto-setup)
+#+END_SRC
+
+The tags file is automatically generated after setup is done. `fastctags-update-tags-file-interval` is the interval (seconds) to generate the tags file and update cache.
+* Usage
+Run `M-x fastctags-nav-find-tag-at-point` or `M-x fastctags-nav-find-tag` for code navigation.
+
+Code completion works out of box because `completion-at-point-functions` is set up in `fastctags-auto-setup`. See [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Completion-in-Buffers.html]] for details. Company or Corfu is recommended for better code completion UI.
+
+* Tips
+** Load extra tags files
+You can set =fastctags-extra-tags-files= to load extra tags files,
+
+#+begin_src elisp
+(setq fastctags-extra-tags-files '("$HOME/TAGS" "/usr/include/TAGS"))
+#+end_src
+
+** Ignore case
+Set `fastctags-complete-ignore-case-p` to ignore case when fetching candidates.
+
+** Use CLI program diff to improve performance
+Make sure CLI program =diff= is executable on Windows.
+
+It's optional but highly recommended.  It can speed up tags file updating.
+
+This package uses diff through variable =diff-command=.
+
+Linux/macOS needs no setup.
+
+** Rust programming language
+Use [[https://github.com/dan-t/rusty-tags][rusty-tags]] to generate tags file for Rust programming language.
+
+Add below code into ~/.emacs,
+#+begin_src elisp
+(setq fastctags-tags-file-name "rusty-tags.emacs")
+#+end_src
+** Interval to update tags file
+Make sure `fastctags-update-tags-file-interval` is greater than the total seconds Ctags program takes to scan code.
+
+* Contact me
+Report bugs at [[https://github.com/redguardtoo/fastctags]].
+* License
+This program is free software: you can redistribute it and/or modify it under the terms of the [[file:LICENSE][GNU General Public License]] as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the [[file:LICENSE][GNU General Public License]] for more details.

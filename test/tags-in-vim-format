@@ -1,0 +1,4 @@
+fastctags-test-case-sensitive-and-partial-match-internal	fastctags-tests.el	/^(defun fastctags-test-case-sensitive-and-partial-match-internal (file-name)$/;"	f
+fastctags-test-completion-internal	flycheck_fastctags-tests.el	/^(defun fastctags-test-completion-internal (file-name)$/;"	f
+fastctags-test-load-tags-file-internal	fastctags-tests.el	/^(defun fastctags-test-load-tags-file-internal (file-name)$/;"	f
+get-full-path	fastctags-tests.el	/^(defun get-full-path (filename)$/;"	f
