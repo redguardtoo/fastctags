@@ -12,10 +12,10 @@ Test with huge projects like Linux kernel without performance issue.
 Only native Emacs API is used. So you can combine it with any UI package (company, corfu, counsel, consult ....)
 
 Code navigation screenshot,
-[[code-navigation.png]]
+[[./code-navigation.png]]
 
 Code completion screenshot,
-[[code-completion.png]]
+[[./code-completion.png]]
 
 * Install and Setup
 You could place =fastctags.el= under [[https://www.emacswiki.org/emacs/LoadPath][Load Path]], then add =(require 'fastctags)= to your configuration.
