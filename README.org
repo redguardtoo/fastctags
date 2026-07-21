@@ -3,8 +3,6 @@
 # [[http://melpa.org/#/fastctags][file:http://melpa.org/packages/fastctags-badge.svg]]
 # [[http://stable.melpa.org/#/fastctags][file:http://stable.melpa.org/packages/fastctags-badge.svg]]
 
-still WIP ...
-
 Navigate&complete code with [[https://github.com/universal-ctags/ctags][Universal Ctags]] in Emacs.
 
 Test with huge projects like Linux kernel without performance issue.
@@ -63,6 +61,14 @@ Add below code into ~/.emacs,
 ** Interval to update tags file
 Make sure `fastctags-update-tags-file-interval` is greater than the total seconds Ctags program takes to scan code.
 
+**  Use below ".dir-locals.el" to set up EVIL's `evil-goto-definition'
+#+begin_src elisp
+((cc-mode . (
+  (eval . (setq-local evil-goto-definition-functions
+                      '(evil-goto-definition-search
+                        fastctags-nav-goto-definition-xref
+                        evil-goto-definition-search))))))
+#+end_src
 * Contact me
 Report bugs at [[https://github.com/redguardtoo/fastctags]].
 * License
