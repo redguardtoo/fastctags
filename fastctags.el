@@ -1441,7 +1441,7 @@ Any tag whose sub-string matches regex will be listed.
 Step 2, user keeps filtering tags."
   (interactive)
   (fastctags-tags-file-must-exist)
-  (let* ((tagname (completing-read "Regex to match tag: " nil nil nil (or (fastctags-selected-str) ""))))
+  (let* ((tagname (read-string "Regex to match tag: " (or (fastctags-selected-str) ""))))
     (when (and tagname (not (string= tagname "")))
       (fastctags-nav-find-tag-api tagname t buffer-file-name))))
 
@@ -1546,7 +1546,7 @@ If SYMBOL-AT-POINT is nil, don't read symbol at point."
                ((region-active-p)
                 (fastctags-selected-str))
                (t
-                (completing-read hint nil)))))
+                (read-string hint)))))
     (when str
       (cond
        ((region-active-p)
