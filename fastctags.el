@@ -1545,6 +1545,9 @@ If SYMBOL-AT-POINT is nil, don't read symbol at point."
   (let* ((str (cond
                ((region-active-p)
                 (fastctags-selected-str))
+               ((and (boundp 'cmd-rewind-replay-session)
+                     cmd-rewind-replay-session)
+                (setq fastctags-keyword nil))
                (t
                 (read-string hint)))))
     (when str
@@ -1648,20 +1651,19 @@ If HINT is not nil, it's used as grep hint.
 ROOT is the directory to grep.  It's automatically detected.
 If `fastctags-use-git-grep-p' is t, git grep is grep program."
   (interactive)
-
   (unless hint
     (setq hint (if (eq fastctags-convert-grep-keyword 'identity)
                    "Regular expression for grep: "
                  "Keyword for searching: ")))
 
   (let* ((text (or default-keyword (fastctags-read-keyword hint)))
-         (keyword (funcall fastctags-convert-grep-keyword text))
+         (keyword (and text (funcall fastctags-convert-grep-keyword text)))
          (default-directory (expand-file-name (or root
                                                   (fastctags-locate-project)
                                                   default-directory)))
          (time (current-time))
-         (cmd (fastctags-grep-cli keyword nil))
-         (cands (split-string (shell-command-to-string cmd) "[\r\n]+" t))
+         (cmd (and keyword (fastctags-grep-cli keyword nil)))
+         (cands (and cmd (split-string (shell-command-to-string cmd) "[\r\n]+" t)))
          (dir-summary (fastctags-dirname default-directory))
          selected)
 
@@ -1691,14 +1693,14 @@ If `fastctags-use-git-grep-p' is t, git grep is grep program."
                    fastctags-ignore-filenames
                    fastctags-opts-cache)
 
-    (when (and cands
-               (setq selected (completing-read (concat hint (format "Grep \"%s\" at %s (%s): "
-                                                                    text
-                                                                    dir-summary
-                                                                    (fastctags--time-cost time)))
-                                               (fastctags-grep-completion-table cands)
-                                               nil
-                                               t)))
+    ;;  cands could be nil, but 3rd party plugins like cmd-rewind might advice `completing-read'
+    (when (setq selected (completing-read (concat hint (format "Grep \"%s\" at %s (%s): "
+                                                               text
+                                                               dir-summary
+                                                               (fastctags--time-cost time)))
+                                          (fastctags-grep-completion-table cands)
+                                          nil
+                                          t))
       (fastctags-open-file-api selected default-directory keyword))))
 
 ;;;###autoload
