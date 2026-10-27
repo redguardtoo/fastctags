@@ -739,12 +739,14 @@ This function return t if FILE is reloaded."
 
 (defun fastctags-completion-table (string pred action)
   "Completion table for fastctags with STRING PRED ACTION."
-  (if (eq action 'metadata)
-      `(metadata (category . fastctags-complete)
-                 (cycle-sort-function . identity)
-                 (display-sort-function . identity))
+  (cond
+   ((eq action 'metadata)
+    `(metadata (category . fastctags-complete)
+               (cycle-sort-function . identity)
+               (display-sort-function . identity)))
+   (t
     (let ((candidates (fastctags-complete-candidates string)))
-      (complete-with-action action candidates string pred))))
+      (complete-with-action action candidates string pred)))))
 
 ;;;###autoload
 (defun fastctags-completion-at-point ()
@@ -1330,9 +1332,13 @@ Focus on TAGNAME if it's not nil."
 (defun fastctags-find-tag-completion-table (cands)
   "Create a completion table with `fastctags-find-tag' category from CANDS."
   (lambda (string pred action)
-    (if (eq action 'metadata)
-        `(metadata (category . fastctags-find-tag))
-      (complete-with-action action cands string pred))))
+     (cond
+      ((eq action 'metadata)
+       `(metadata (category . fastctags-find-tag)))
+      ((eq action 'original-candidates)
+       cands)
+      (t
+       (complete-with-action action cands string pred)))))
 
 (defun fastctags-open-tag-cand (tagname cands time)
   "Find TAGNAME from CANDS.  Open tags file at TIME."
@@ -1406,7 +1412,8 @@ Focus on TAGNAME if it's not nil."
 
 (defun fastctags-nav-find-tag-api (tagname fuzzy current-file)
   "Find TAGNAME using FUZZY algorithm from CURRENT-FILE."
-  (let* ((time (current-time))
+  (let* (replay-session
+         (time (current-time))
          (dir (fastctags-tags-file-directory))
          (current-file (and current-file (file-local-name current-file))))
     (if dir (setq dir (file-local-name dir)))
@@ -1420,6 +1427,12 @@ Focus on TAGNAME if it's not nil."
     (cond
      ((and (not dir) (not fastctags-extra-tags-files))
       (message "Tags file is not ready yet."))
+
+     ((setq replay-session (fastctags-skip-completing-read-collection-p))
+      (let* ((collection (nth 1 (plist-get replay-session :completing-read-args)))
+             (candidates (funcall collection nil nil 'original-candidates)))
+        (fastctags-open-tag-cand nil candidates time)))
+
      ((not tagname)
       (error "Please provide a keyword to search tag"))
 
@@ -1641,9 +1654,11 @@ Extended regex is used, like (pattern1|pattern2)."
 (defun fastctags-grep-completion-table (cands)
   "Create a completion table with `fastctags-grep' category from CANDS."
   (lambda (string pred action)
-    (if (eq action 'metadata)
-        `(metadata (category . fastctags-grep))
-      (complete-with-action action cands string pred))))
+    (cond
+     ((eq action 'metadata)
+      `(metadata (category . fastctags-grep)))
+     (t
+      (complete-with-action action cands string pred)))))
 
 ;;;###autoload
 (defun fastctags-grep (&optional default-keyword hint root)
