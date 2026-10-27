@@ -419,6 +419,10 @@ The file is also used by tags file auto-update process.")
 (defvar fastctags-last-tagname-at-point nil
   "Last tagname queried at point.")
 
+(defun fastctags-skip-completing-read-collection-p ()
+  "Skip to produce collection for `completing-read'."
+  (and (boundp 'cmd-rewind-replay-session) cmd-rewind-replay-session))
+
 (defun fastctags-in-string-or-comment ()
   "Return non-nil if point is within a string or comment."
   (let ((ppss (syntax-ppss)))
@@ -1441,9 +1445,9 @@ Any tag whose sub-string matches regex will be listed.
 Step 2, user keeps filtering tags."
   (interactive)
   (fastctags-tags-file-must-exist)
-  (let* ((tagname (read-string "Regex to match tag: " (or (fastctags-selected-str) ""))))
-    (when (and tagname (not (string= tagname "")))
-      (fastctags-nav-find-tag-api tagname t buffer-file-name))))
+  (let* ((tagname (unless (fastctags-skip-completing-read-collection-p)
+                    (read-string "Regex to match tag: " (or (fastctags-selected-str) "")))))
+    (fastctags-nav-find-tag-api tagname t buffer-file-name)))
 
 ;;;###autoload
 (defun fastctags-nav-find-tag-at-point ()
@@ -1545,8 +1549,7 @@ If SYMBOL-AT-POINT is nil, don't read symbol at point."
   (let* ((str (cond
                ((region-active-p)
                 (fastctags-selected-str))
-               ((and (boundp 'cmd-rewind-replay-session)
-                     cmd-rewind-replay-session)
+               ((fastctags-skip-completing-read-collection-p)
                 (setq fastctags-keyword nil))
                (t
                 (read-string hint)))))
