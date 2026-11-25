@@ -15,6 +15,9 @@ Code navigation screenshot,
 Code completion screenshot,
 [[./code-completion.png]]
 
+Generate tags from JSON files screenshot,
+[[./json-file.png]]
+
 * Install and Setup
 You could place =fastctags.el= under [[https://www.emacswiki.org/emacs/LoadPath][Load Path]], then add =(require 'fastctags)= to your configuration.
 
