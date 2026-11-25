@@ -1071,26 +1071,23 @@ CURRENT-FILE is used to compare with candidate path."
       pat))
 
    ;; fallback
-   (t excmd)))
+   (t
+    excmd)))
 
 (defun fastctags-search-regex (tagname)
   "Return regex to match a Vim ctags line containing TAGNAME using rx."
   (rx-to-string
    `(seq line-start
-         ;; Group 1: Tag Name
-         (group ,(or tagname '(one-or-more (regexp "[^\t]"))))
+         (group ,(or tagname '(one-or-more (not (any "\t")))))
          "\t"
-         ;; Group 2: Filename (changed to one-or-more)
-         (group (one-or-more (regexp "[^\t]")))
+         (group (one-or-more (not (any "\t"))))
          "\t"
-         ;; Group 3: Ex-command (the search pattern or line number)
          (group (+? any))
          ";\""
-         ;; Group 4: Kind (made optional and more flexible for trailing fields)
-         (zero-or-more whitespace)
-         (group (regexp "[a-zA-Z]"))
-         ;; Allow for extra fields like line:42 or class:X
-         (zero-or-more any)
+         (zero-or-one
+          "\t"
+          (group (any "a-zA-Z"))
+          (zero-or-more any))
          line-end)))
 
 (defun fastctags-apply-excmd (excmd)
