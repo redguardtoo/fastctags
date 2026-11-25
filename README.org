@@ -51,6 +51,27 @@ This package uses diff through variable =diff-command=.
 
 Linux/macOS needs no setup.
 
+** Additional JSON files to scan for tags
+`fastctags-extra-json-files` specifies additional JSON files to scan for tags.
+
+JSON file paths are relative to the directory containing tags file.
+
+For example, to generate tags for JSON object properties,
+#+begin_src elisp
+(setq fastctags-extra-json-files
+      '("src/i18n/locales/en.json"
+        "src/i18n/locales/zh.json"))
+#+end_src
+
+Set it to nil to disable extra JSON file scanning.
+
+Alternatively, you can set this variable in the project's ".dir-locals.el" file,
+#+begin_src elisp
+((nil . ((fastctags-extra-json-files
+          . ("src/i18n/locales/en.json"
+             "src/i18n/locales/zh.json")))))
+#+end_src
+
 ** Rust programming language
 Use [[https://github.com/dan-t/rusty-tags][rusty-tags]] to generate tags file for Rust programming language.
 
