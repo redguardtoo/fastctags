@@ -1750,6 +1750,18 @@ If FORCED-TAGS-FILE is nil, the updating process might now happen."
         (message "%s is updated!" tags-file)))))
 
 ;;;###autoload
+(defun fastctags-tag-line (tag-name file-name line-number &optional kind)
+  "Return one tags-file line using TAG-NAME, FILE-NAME, LINE-NUMBER and KIND."
+  (concat
+   (format "%s\t%s\t%d;\""
+           tag-name
+           file-name
+           line-number)
+   (if kind
+       (format "\t%s" kind)
+     "")))
+
+;;;###autoload
 (defun fastctags-auto-setup ()
   "Set up `completion-at-point-functions'."
   (add-hook 'prog-mode-hook
