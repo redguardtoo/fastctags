@@ -1130,6 +1130,9 @@ CURRENT-FILE is used to compare with candidate path."
 (defun fastctags-nav-parse-cands (str tagname-re tagname root-dir fuzzy rank)
   "Parse string STR with TAGNAME-RE TAGNAME ROOT-DIR FUZZY RANK.
 Return candidate."
+  (when fastctags-debug
+    (message "fastctags-nav-parse-cands called => %s %s %s %s"
+             str tagname-re tagname rank))
   (when (> (length (string-trim (or str ""))) 0)
     (let* (cands cand)
       (with-temp-buffer
@@ -1396,10 +1399,12 @@ Focus on TAGNAME if it's not nil."
 
 (defun fastctags-nav-format-candidate-default (candidate)
   "Format code navigation CANDIDATE for display."
-  (format "%s:%s:%s"
-          (plist-get candidate :kind)
-          (plist-get candidate :file)
-          (plist-get candidate :text)))
+  (let* ((kind (plist-get candidate :kind))
+         (excmd (plist-get candidate :excmd)))
+    (format "%s:%s:%s"
+            (or kind "")
+            (plist-get candidate :file)
+            (plist-get candidate :text))))
 
 ;;;###autoload
 (defun fastctags-scan-code (&optional dir)
