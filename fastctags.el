@@ -1086,7 +1086,7 @@ CURRENT-FILE is used to compare with candidate path."
          ";\""
          (zero-or-one
           "\t"
-          (group (any "a-zA-Z"))
+          (group (one-or-more (any "a-zA-Z")))
           (zero-or-more any))
          line-end)))
 
@@ -1396,9 +1396,10 @@ Focus on TAGNAME if it's not nil."
 
 (defun fastctags-nav-format-candidate-default (candidate)
   "Format code navigation CANDIDATE for display."
-  (let* ((kind (plist-get candidate :kind))
-         (excmd (plist-get candidate :excmd)))
-    (format "%s:%s:%s"
+  (let* ((tagname (plist-get candidate :tagname))
+         (kind (plist-get candidate :kind)))
+    (format "%s [%s] %s: %s"
+            (or tagname "")
             (or kind "")
             (plist-get candidate :file)
             (plist-get candidate :text))))
@@ -1754,9 +1755,7 @@ If FORCED-TAGS-FILE is nil, the updating process might now happen."
            tag-name
            file-name
            line-number)
-   (if kind
-       (format "\t%s" kind)
-     "")))
+   (if kind (format "\t%s" kind) "")))
 
 ;;;###autoload
 (defun fastctags-auto-setup ()
